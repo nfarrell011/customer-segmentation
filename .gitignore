@@ -1,0 +1,78 @@
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Ignore virtual environment directories
+venv/
+env/
+.venv/
+.env/
+
+# Ignore Jupyter notebook output metadata (optional, if you want)
+*.ipynb-meta
+
+# Ignore environment variables and other config files
+*.env
+*.env.*
+.envrc
+.vscode/
+
+# Ignore macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Ignore Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Ignore temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.~*
+
+# Ignore compiled code (C, C++, etc.)
+*.o
+*.obj
+*.dll
+*.so
+*.dylib
+*.exe
+
+# Ignore lockfiles
+Pipfile.lock
+poetry.lock
+package-lock.json
+yarn.lock
+
+# Ignore compressed files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.bz2
+
+# Ignore coverage reports
+coverage/
+*.cover
+*.coverage
+.coverage.*
+
+# Ignore database files
+*.sqlite
+*.db
+
+# Ignore Jupyter notebook output files
+*.out
+*.pickle
