@@ -22,7 +22,8 @@ from sklearn.model_selection import train_test_split
 ################################################################################################################################
 # 1
 
-def perform_the_train_test_split(df: pd.DataFrame, 
+def perform_the_train_test_split(df: pd.DataFrame,
+                                 target_attr: str, 
                                  test_size: float, 
                                  train_test_split_random_state: int, 
                                  split_folder: str, 
@@ -34,7 +35,9 @@ def perform_the_train_test_split(df: pd.DataFrame,
 
     Args:
         df (pd.DataFrame): 
-            The dataframe to be split into train and test/validation sets. The last column is treated as the target variable.
+            The dataframe to be split into train and test/validation sets. 
+        target_attr (str)    
+            The name of the target variable column.
         test_size (float): 
             The proportion of the dataset to allocate to the test/validation set (e.g., 0.2 for a 20% test set).
         train_test_split_random_state (int): 
@@ -70,8 +73,10 @@ def perform_the_train_test_split(df: pd.DataFrame,
         small_set_name = 'test_df.csv'
 
     # Split the dataframe into features (cap_x) and target (y)
-    cap_x_df, y_df = df.iloc[:, :-1], df.iloc[:, -1].to_frame()
-
+    #cap_x_df, y_df = df.iloc[:, :-1], df.iloc[:, -1].to_frame()
+    y_df = df.loc[:, target_attr].copy().to_frame()
+    cap_x_df = df.drop(columns=[target_attr]).copy()
+    
     # Apply stratification if specified
     if stratify:
         stratify = y_df
