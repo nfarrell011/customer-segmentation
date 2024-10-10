@@ -183,7 +183,6 @@ def get_missingness(df: pd.DataFrame,
             A dictionary containing the list of columns to be dropped due to high missingness:
             - 'missingness_drop_list': List of column names with missingness exceeding the threshold.
     """
-
     missingness_drop_list = []
     # ITer cols and check calculate missingness
     for attr in df.columns:
@@ -199,6 +198,52 @@ def get_missingness(df: pd.DataFrame,
     }
 
     return return_dict
+
+################################################################################################################################
+# 4
+def separate_unique_columns(df):
+    """
+    This function separates columns of a DataFrame into those with 100% unique values and those with less than 100% unique values.
+
+    Args:
+    df (pd.DataFrame): The DataFrame containing the data.
+
+    Returns:
+    dict: A dictionary with two keys: '100% unique' and '<100% unique'. Each contains a list of column names.
+    """
+    unique_cols = []
+    non_unique_cols = []
+
+    for column in df.columns:
+        num_unique = df[column].nunique()
+        total_values = df[column].size
+        
+        if num_unique == total_values:
+            unique_cols.append(column)
+        else:
+            non_unique_cols.append(column)
+    
+    print("*****************************")
+    print("non_ML_attr:")
+    for attr in unique_cols:
+        print(attr)
+    print()
+    print("*****************************")
+    print("ML_attr:")
+    for attr in non_unique_cols:
+        print(attr)
+    print()
+    print("*****************************")
+    print("non_ml_attribute_list:")
+    print(unique_cols)
+
+
+    
+
+    return {
+        'non_ML_attr': unique_cols,
+        'ML_attr': non_unique_cols
+    }
 
 ################################################################################################################################
 # END
