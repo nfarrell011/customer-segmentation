@@ -194,6 +194,49 @@ def check_frequency(df: pd.DataFrame, column: str):
         print(f"Error calculating frequency for {column}: {e}")
 
 ################################################################################################################################
+
+def generate_contingency_tables(df: pd.DataFrame, column: str, target: str):
+    """
+    Generate contingency tables for a categorical variables in the DataFrame 
+    against the specified target variable.
+
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        The input DataFrame containing the data.
+    column : str
+        The name of the column to generate contingency table for. 
+    target : str
+        The name of the target column.
+
+    Returns:
+    --------
+    None - Prints contingency table.
+    """
+    if target not in df.columns:
+        raise ValueError(f"Target column '{target}' not found in the DataFrame.")
+
+    print(f"\nContingency Table: {column} vs {target}")
+    contingency_table = pd.crosstab(df[column], df[target])
+
+    # Convert counts to percentages of the total
+    total = contingency_table.values.sum()
+    contingency_table_percentage = (contingency_table / total) * 100
+
+    # Plot heatmap
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(contingency_table_percentage, annot=True, cmap='RdBu', fmt='.2f', linewidths=0.5, cbar=True, vmax=100, vmin=0, center=50)
+    plt.title(f'Heatmap: {column} vs {target} (%)', fontsize=16)
+    plt.xlabel(target, fontsize=12)
+    plt.ylabel(column, fontsize=12)
+
+    # Show the plot
+    plt.show()
+
+
+
+
+################################################################################################################################
 # 5
 
 def nominal_eda(df: pd.DataFrame, target: str = None):
@@ -220,6 +263,8 @@ def nominal_eda(df: pd.DataFrame, target: str = None):
         if isinstance(df[col].dtype, pd.CategoricalDtype) or df[col].dtype == 'object':
             if target and col == target:
                 print("*"*27, "\n****** TARGET COLUMN ******\n", "*"*27)
+            else:
+                generate_contingency_tables(df, col, target)
             plot_bar(df, col)
             check_frequency(df, col)
         else:
