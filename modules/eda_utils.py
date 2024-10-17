@@ -28,6 +28,8 @@ from scipy.stats import zscore
 #  9 -> detect_outliers_zscore()
 # 10 -> detect_outliers_iqr()
 # 11 -> numerical_eda()
+# 12 -> display_means_heatmap()
+# 13 -> generate_contingency_tables()
 
 
 ################################################################################################################################
@@ -192,49 +194,6 @@ def check_frequency(df: pd.DataFrame, column: str):
         print(freq_df, "\n")
     except Exception as e:
         print(f"Error calculating frequency for {column}: {e}")
-
-################################################################################################################################
-
-def generate_contingency_tables(df: pd.DataFrame, column: str, target: str):
-    """
-    Generate contingency tables for a categorical variables in the DataFrame 
-    against the specified target variable.
-
-    Parameters:
-    -----------
-    df : pd.DataFrame
-        The input DataFrame containing the data.
-    column : str
-        The name of the column to generate contingency table for. 
-    target : str
-        The name of the target column.
-
-    Returns:
-    --------
-    None - Prints contingency table.
-    """
-    if target not in df.columns:
-        raise ValueError(f"Target column '{target}' not found in the DataFrame.")
-
-    print(f"\nContingency Table: {column} vs {target}")
-    contingency_table = pd.crosstab(df[column], df[target])
-
-    # Convert counts to percentages of the total
-    total = contingency_table.values.sum()
-    contingency_table_percentage = (contingency_table / total) * 100
-
-    # Plot heatmap
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(contingency_table_percentage, annot=True, cmap='RdBu', fmt='.2f', linewidths=0.5, cbar=True, vmax=100, vmin=0, center=50)
-    plt.title(f'Heatmap: {column} vs {target} (%)', fontsize=16)
-    plt.xlabel(target, fontsize=12)
-    plt.ylabel(column, fontsize=12)
-
-    # Show the plot
-    plt.show()
-
-
-
 
 ################################################################################################################################
 # 5
@@ -495,6 +454,78 @@ def numerical_eda(df: pd.DataFrame, target: str = None):
 
     return {"z_score_outliers": z_score_outliers, "iqr_outliers": iqr_outliers}
 
+################################################################################################################################
+# 12
+def display_means_heatmap(numerical_df: pd.DataFrame, target_series: pd.Series):
+    """
+    Display a heatmap of the mean values of numerical columns for each target class.
+
+    Parameters:
+    -----------
+    numerical_df : pd.DataFrame
+        DataFrame containing numerical columns.
+    target_series : pd.Series
+        Series containing the categorical target variable.
+
+    Returns:
+    --------
+    None
+    """
+    if isinstance(target_series.dtype, pd.CategoricalDtype):
+        print("Target not categorical.")
+        return
+
+    combined_df = numerical_df.copy()
+    combined_df['Target'] = target_series
+    mean_values = combined_df.groupby('Target').mean()
+
+    # Create subplots: one heatmap column
+    fig, axes = plt.subplots(1, len(mean_values.columns), figsize=(6 * len(mean_values.columns), 6))
+
+    # Plot each column as an individual heatmap
+    for (col, ax) in (zip(mean_values.columns, axes)):
+        sns.heatmap(
+            mean_values[[col]],annot=True,cmap='coolwarm', fmt='.2f', linewidths=0.5, cbar=True, ax=ax)
+        ax.set_title(f'Mean {col} by Target Class', fontsize=14)
+        ax.set_xlabel('Feature')
+        ax.set_ylabel('Target Classes')
+################################################################################################################################
+# 13
+
+def generate_contingency_tables(df: pd.DataFrame, column: str, target: str):
+    """
+    Generate contingency tables for a categorical variables in the DataFrame 
+    against the specified target variable.
+
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        The input DataFrame containing the data.
+    column : str
+        The name of the column to generate contingency table for. 
+    target : str
+        The name of the target column.
+
+    Returns:
+    --------
+    None - Prints contingency table.
+    """
+    if target not in df.columns:
+        raise ValueError(f"Target column '{target}' not found in the DataFrame.")
+
+    print(f"\nContingency Table: {column} vs {target}")
+    contingency_table = pd.crosstab(df[column], df[target])
+
+    # Convert counts to percentages of the total
+    total = contingency_table.values.sum()
+    contingency_table_percentage = (contingency_table / total) * 100
+
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(contingency_table_percentage, annot=True, cmap='RdBu', fmt='.2f', linewidths=0.5, cbar=True, vmax=100, vmin=0, center=50)
+    plt.title(f'Heatmap: {column} vs {target} (%)', fontsize=16)
+    plt.xlabel(target, fontsize=12)
+    plt.ylabel(column, fontsize=12)
+    plt.show()
 
 ################################################################################################################################
 # END
